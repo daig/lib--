@@ -6,5 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Project name and supported languages
 project(libmm LANGUAGES CXX)
 
+include_directories(${CMAKE_SOURCE_DIR}/src/)
+
 add_library(libmm INTERFACE)
 target_include_directories(libmm INTERFACE src)
