@@ -71,3 +71,27 @@ template <class T, class U = T>
 concept NoThrowSwappable = NonVoid<T> && NonVoid<U> && requires(T&& t, U&& u) {
     { swap(std::forward<T>(t), std::forward<U>(u)) } noexcept -> std::same_as<void>;
 };
+
+template <std::input_iterator A, std::input_iterator B>
+struct iter_pair {
+    using reference_t = std::pair<typename A::T&, typename B::T&>;
+
+    reference_t  operator*() { return {*a, *b}; }
+    iter_pair& operator++() { ++a; ++b; return *this; }
+    iter_pair  operator++(int) { iter_pair tmp = *this; ++*this; return tmp; }
+    bool       operator==(const iter_pair& other) const { return a == other.a || b == other.b; }
+    bool       operator!=(const iter_pair& other) const { return a != other.a && b != other.b; }
+
+    A a; B b;
+};
+
+template <typename A, typename B>
+struct zip {
+    A a; B b;
+
+    zip(A a, B b) : a(a), b(b) {}
+
+    using iterator = iter_pair<typename A::iterator, typename B::iterator>;
+    iterator begin() const noexcept { return iter_pair{a.begin(), b.begin()}; }
+    iterator end() const noexcept { return iter_pair{a.end(), b.end()}; }
+};
